@@ -1,0 +1,23 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const bugSchema = new Schema({
+    projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
+    reportedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+    assignedTo: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+    priority: { type: Number, default: 0 },
+    severity: { type: Number, default: 0 },
+    stepsToReproduce: { type: String, default: '' },
+    // image: { type: String, default: '' }, // URL or path to image
+    deadline: { type: Date, default: null},
+    status: { type: String, enum: ['Open', 'To-do', 'Resolved', 'Closed'], default: 'Open' },
+    comments: [{
+        userId: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+        comment: { type: String, default: '' },
+        date: { type: Date, default: Date.now }
+    }]
+});
+
+const Bug = mongoose.model('Bug', bugSchema);
+
+module.exports = Bug ;
