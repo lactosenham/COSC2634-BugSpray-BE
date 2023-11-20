@@ -1,9 +1,12 @@
 require('dotenv').config({ path: './.env' });
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const crypto = require('crypto');
 const authRoutes = require('./routes/authRoutes'); 
 const projectRoutes = require('./routes/projectRoutes');
 const bugRoutes = require('./routes/bugRoutes');
+const bugController = require('./controllers/bugController');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -17,6 +20,20 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Use JSON middleware
 app.use(express.json());
+app.use(bodyParser.json());
+
+// Endpoint to receive GitHub webhook payloads
+app.post('/webhook', (req, res) => {
+    const payload = req.body;
+    console.log('Received GitHub Payload:', JSON.stringify(payload, null, 2));
+    try {
+        bugController.processGitHubPayload(payload);
+        res.status(200).send('Webhook received successfully');
+    } catch (error) {
+        console.error('Error processing GitHub payload:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 app.use('/auth', authRoutes); 
 
