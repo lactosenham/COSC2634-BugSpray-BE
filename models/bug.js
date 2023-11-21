@@ -8,6 +8,8 @@ const bugSchema = new Schema({
     assignedTo: { type: Schema.Types.ObjectId, ref: 'User', default: null },
     priority: { type: Number, default: 0 },
     severity: { type: Number, default: 0 },
+    name: { type: String, required: true },  
+    description: { type: String, default: '' },  
     stepsToReproduce: { type: String, default: '' },
     deadline: { type: Date, default: null },
     status: { type: String, enum: ['Open', 'To-do', 'Resolved', 'Closed'], default: 'Open' },

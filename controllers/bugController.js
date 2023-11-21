@@ -6,9 +6,8 @@ const bugController = {};
 
 bugController.reportBug = async (req, res) => {
     try {
-        const { projectId, assignedTo, priority, severity, stepsToReproduce, image, deadline, status, comments } = req.body;
+        const { projectId, assignedTo, priority, severity, name, description, stepsToReproduce, deadline, status, comments } = req.body;
 
-        console.log('Received projectId:', projectId);
         const project = await Project.findById(projectId);
         if (!project) {
             return res.status(404).send('Project not found');
@@ -21,8 +20,9 @@ bugController.reportBug = async (req, res) => {
             assignedTo,
             priority,
             severity,
+            name,
+            description,
             stepsToReproduce,
-            image,
             deadline,
             status,
             comments
@@ -97,6 +97,8 @@ bugController.updateBug = async (req, res) => {
             assignedTo, 
             priority, 
             severity, 
+            name,
+            description,
             stepsToReproduce, 
             deadline, 
             status, 
@@ -118,6 +120,8 @@ bugController.updateBug = async (req, res) => {
             ...(assignedTo && { assignedTo }),
             ...(priority !== undefined && { priority }),
             ...(severity !== undefined && { severity }),
+            ...(name !== undefined && { name }),
+            ...(description !== undefined && { description }),
             ...(stepsToReproduce && { stepsToReproduce }),
             ...(deadline && { deadline }),
             ...(status && { status }),
@@ -135,7 +139,6 @@ bugController.updateBug = async (req, res) => {
         res.status(500).send('Server error, bug');
     }
 };
-
 
 
 bugController.deleteBug = async (req, res) => {
