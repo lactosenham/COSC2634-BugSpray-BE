@@ -136,7 +136,13 @@ projectController.deleteProject = async (req, res) => {
 
 projectController.addDeveloper = async (req, res) => {
     try {
-        const { projectId, developerId } = req.body;
+        const { projectId, developerIds } = req.body;
+
+        // Ensure developerIds is always an array
+        const developerIdsArray = Array.isArray(developerIds) ? developerIds : [developerIds];
+
+        console.log("Array of devs being added: ", developerIdsArray.join(', '));
+
         const project = await Project.findById(projectId);
 
         if (!project) {
@@ -147,19 +153,28 @@ projectController.addDeveloper = async (req, res) => {
             return res.status(403).send('Access denied. Only the creating manager can modify this project.');
         }
 
-        if (project.developers.includes(developerId)) {
-            return res.status(400).send('Developer already assigned to this project');
+        let addedDevelopers = [];
+
+        for (const id of developerIdsArray) {
+            if (!project.developers.includes(id)) {
+                project.developers.push(id);
+                addedDevelopers.push(id);
+            }
         }
 
-        project.developers.push(developerId);
-        await project.save();
-
-        res.status(200).send('Developer added successfully');
+        if (addedDevelopers.length > 0) {
+            await project.save();
+            console.log(`Developers [${addedDevelopers.join(', ')}] added to project ${projectId}`);
+            res.status(200).send(`Developers added successfully: ${addedDevelopers.join(', ')}`);
+        } else {
+            res.status(400).send('No new developers were added. They might already be assigned to this project.');
+        }
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
     }
 };
+
 
 projectController.removeDeveloper = async (req, res) => {
     try {
