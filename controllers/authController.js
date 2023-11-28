@@ -8,6 +8,12 @@ authController.register = async (req, res) => {
     try {
         const { username, password, name, role, developerType } = req.body;
 
+        // Password validation
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).send('Password does not meet the required criteria');
+        }
+
         const userExists = await User.findOne({ username });
         if (userExists) {
             return res.status(400).send('User already exists');
@@ -32,6 +38,7 @@ authController.register = async (req, res) => {
         res.status(500).send('Server error, register');
     }
 };
+
 
 authController.login = async (req, res) => {
     try {
