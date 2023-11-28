@@ -1,0 +1,40 @@
+{
+    "client": "Thunder Client",
+    "environmentName": "Bug Spray Env",
+    "dateExported": "2023-11-28T07:42:01.104Z",
+    "version": "1.0",
+    "variables": [
+        {
+            "name": "bugSplat.devToken",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTVjNmU1YTBlMzc1ZTBmMTc5NTdjYjgiLCJyb2xlIjoiRGV2ZWxvcGVyIiwiZGV2ZWxvcGVyVHlwZSI6IkNsb3VkIiwiaWF0IjoxNzAxMTU1NDY3LCJleHAiOjE3MDEyNDE4Njd9.0yVcHlCgg-4VJAB0D_XEVl5fjWvpBtriQmzmYVUILRA"
+        },
+        {
+            "name": "bugSplat.managerToken",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTYwOWRiZWM0MGNjMjAzMmJkMjgzYTgiLCJyb2xlIjoiTWFuYWdlciIsImRldmVsb3BlclR5cGUiOm51bGwsImlhdCI6MTcwMTE1NTQ2NywiZXhwIjoxNzAxMjQxODY3fQ.bLdFiiZNxBqekxX1A8eDc-NJYnVRggSSYuA99rd0NPs"
+        },
+        {
+            "name": "bugSplat.managerToken2",
+            "value": "1"
+        },
+        {
+            "name": "bugSplat.projectID",
+            "value": "6565928b0bd401ca8337da53"
+        },
+        {
+            "name": "bugSplat.projectName",
+            "value": "Fourth Project for Man manager"
+        },
+        {
+            "name": "bugSplat.bugID",
+            "value": "6565928e0bd401ca8337da67"
+        },
+        {
+            "name": "bugSplat.devID",
+            "value": "655c6e5a0e375e0f17957cb8"
+        },
+        {
+            "name": "bugSplat.managerID",
+            "value": "name"
+        }
+    ]
+}
