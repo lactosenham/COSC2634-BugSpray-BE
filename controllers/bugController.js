@@ -180,6 +180,50 @@ bugController.updateBugWithCommit = async (bugId, commitMessage) => {
     }
 };
 
+bugController.getTotalBugsInProject = async (req, res) => {
+    try {
+        const projectId = req.params.projectId;
+
+        const totalBugs = await Bug.countDocuments({ projectId });
+
+        res.status(200).json({ totalBugs });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, getTotalBugsInProject');
+    }
+};
+
+
+bugController.searchAndSortBugs = async (req, res) => {
+    try {
+        const { priority, severity, name, status } = req.body;
+
+        let query = {};
+
+        // Search criteria
+        if (name) {
+            query.name = { $regex: new RegExp(name, 'i') };
+        }
+        if (status) {
+            query.status = status;
+        }
+
+        let bugs = await Bug.find(query);
+
+        if (priority !== undefined || severity !== undefined) {
+            bugs = bugs.filter((bug) => (
+                (priority === undefined || bug.priority === priority) &&
+                (severity === undefined || bug.severity === severity)
+            ));
+        }
+
+        return res.json(bugs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
 
 bugController.processGitHubPayload = (payload) => {
     try {
