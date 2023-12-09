@@ -18,4 +18,8 @@ router.patch('/update/:id', isAuthenticated, bugController.updateBug);
 
 router.delete('/delete/:id', isAuthenticated, bugController.deleteBug);
 
+router.get('/total/:projectId', bugController.getTotalBugsInProject);
+
+router.post('/sort', bugController.searchAndSortBugs);
+
 module.exports = router;
