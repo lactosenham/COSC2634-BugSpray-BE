@@ -1,12 +1,17 @@
 require('dotenv').config({ path: './.env' });
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
+const cors = require('cors');
+
+
 const authRoutes = require('./routes/authRoutes'); 
 const projectRoutes = require('./routes/projectRoutes');
 const bugRoutes = require('./routes/bugRoutes');
 const bugController = require('./controllers/bugController');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -22,6 +27,9 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.use(express.json());
 app.use(bodyParser.json());
 
+// Use CORS middleware
+app.use(cors());
+
 // Endpoint to receive GitHub webhook payloads
 app.post('/webhook', (req, res) => {
     const payload = req.body;
@@ -35,6 +43,7 @@ app.post('/webhook', (req, res) => {
     }
 });
 
+// Use Authentication Routes
 app.use('/auth', authRoutes); 
 
 // Use Project Routes
