@@ -196,7 +196,7 @@ bugController.getTotalBugsInProject = async (req, res) => {
 
 bugController.searchAndSortBugs = async (req, res) => {
     try {
-        const { priority, severity, name, status } = req.body;
+        const { priority, severity, name, status, sortField, sortOrder } = req.body;
 
         let query = {};
 
@@ -210,11 +210,35 @@ bugController.searchAndSortBugs = async (req, res) => {
 
         let bugs = await Bug.find(query);
 
+        // Filter by priority and severity
         if (priority !== undefined || severity !== undefined) {
             bugs = bugs.filter((bug) => (
                 (priority === undefined || bug.priority === priority) &&
                 (severity === undefined || bug.severity === severity)
             ));
+        }
+
+        // Check for valid sort request
+        if (sortField && sortOrder) {
+            const validSortFields = ['severity', 'priority'];
+            const validSortOrders = ['asc', 'desc'];
+
+            if (!validSortFields.includes(sortField)) {
+                return res.status(400).json({ error: `Invalid sort field: ${sortField}` });
+            }
+
+            if (!validSortOrders.includes(sortOrder)) {
+                return res.status(400).json({ error: `Invalid sort order: ${sortOrder}` });
+            }
+
+            // Sort based on valid request
+            bugs.sort((a, b) => {
+                if (sortOrder === 'asc') {  // Ascending order
+                    return a[sortField] > b[sortField] ? 1 : -1;
+                } else {                    // Descending order
+                    return a[sortField] < b[sortField] ? 1 : -1;
+                }
+            });
         }
 
         return res.json(bugs);
@@ -223,7 +247,6 @@ bugController.searchAndSortBugs = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 
 bugController.processGitHubPayload = (payload) => {
     try {
