@@ -1,4 +1,5 @@
 const Project = require('../models/project');
+const User =  require('../models/user');
 
 const projectController = {};
 
@@ -224,6 +225,24 @@ projectController.findDeveloper = async (req, res) => {
     }
 };
 
+projectController.getAllDeveloper = async (req, res) => {
+    try {
+        const devs = [];
+        const users = await User.find();
+        console.log(users);
+        for (const user of users)
+        {
+            if (user.role == "Developer")
+                {
+                    devs.push(user);
+                }
+        };
+        res.status(200).send(devs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, findDevelopers');
+    }
+};
 
 
 module.exports = projectController;

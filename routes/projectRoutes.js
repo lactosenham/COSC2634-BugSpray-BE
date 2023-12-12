@@ -4,6 +4,8 @@ const { isManager, isAuthenticated } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+router.get('/getAllDeveloper', projectController.getAllDeveloper);
+
 router.post('/create', isManager, projectController.createProject);
 
 router.get('/all', projectController.getAllProjects);
