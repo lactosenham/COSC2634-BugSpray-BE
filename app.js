@@ -10,6 +10,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes'); 
 const projectRoutes = require('./routes/projectRoutes');
 const bugRoutes = require('./routes/bugRoutes');
+const userRoutes = require('./routes/userRoutes');
 const bugController = require('./controllers/bugController');
 
 const app = express();
@@ -51,6 +52,9 @@ app.use('/projects', projectRoutes);
 
 // Use Bug Routes
 app.use('/bugs', bugRoutes);
+
+// Use User Routes
+app.use('/user', userRoutes);
 
 // Start the server
 app.listen(port, () => {

@@ -1,5 +1,5 @@
 const Project = require('../models/project');
-const User =  require('../models/user');
+const User = require('../models/user');
 
 const projectController = {};
 
@@ -71,20 +71,20 @@ projectController.getMyProjects = async (req, res) => {
 
 projectController.searchProjectByName = async (req, res) => {
     try {
-      const partialName = req.body.partialName;
-  
-      const projects = await Project.find({ name: { $regex: new RegExp(partialName, 'i') } });
-  
-      if (projects.length === 0) {
-        return res.status(404).send('No projects found');
-      }
-  
-      res.status(200).send(projects);
+        const partialName = req.body.partialName;
+
+        const projects = await Project.find({ name: { $regex: new RegExp(partialName, 'i') } });
+
+        if (projects.length === 0) {
+            return res.status(404).send('No projects found');
+        }
+
+        res.status(200).send(projects);
     } catch (error) {
-      console.error(error);
-      res.status(500).send('Server error, searchProjectByName');
+        console.error(error);
+        res.status(500).send('Server error, searchProjectByName');
     }
-  };
+};
 
 projectController.updateProject = async (req, res) => {
     try {
@@ -101,8 +101,8 @@ projectController.updateProject = async (req, res) => {
 
         if (name) {
             project.name = name;
-          }
-      
+        }
+
         if (description) {
             project.description = description;
         }
@@ -203,46 +203,5 @@ projectController.removeDeveloper = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
-
-projectController.findDeveloper = async (req, res) => {
-    try {
-        const { projectId } = req.params;
-        const { partialName } = req.body;
-
-        const project = await Project.findById(projectId).populate('developers', 'name');
-
-        if (!project) {
-            return res.status(404).send('Project not found');
-        }
-
-        // Filter developers whose names partially match the provided partialName
-        const matchingDevelopers = project.developers.filter(developer => developer.name.includes(partialName));
-
-        res.status(200).json(matchingDevelopers);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error, findDevelopers');
-    }
-};
-
-projectController.getAllDeveloper = async (req, res) => {
-    try {
-        const devs = [];
-        const users = await User.find();
-        console.log(users);
-        for (const user of users)
-        {
-            if (user.role == "Developer")
-                {
-                    devs.push(user);
-                }
-        };
-        res.status(200).send(devs);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error, findDevelopers');
-    }
-};
-
 
 module.exports = projectController;
