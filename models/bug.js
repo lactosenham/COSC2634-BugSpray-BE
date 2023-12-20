@@ -12,7 +12,11 @@ const bugSchema = new Schema({
     description: { type: String, default: '' },  
     stepsToReproduce: { type: String, default: '' },
     deadline: { type: Date, default: null },
-    status: { type: String, enum: ['Open', 'To-do', 'Resolved', 'Closed'], default: 'Open' },
+    status: { type: String, enum: ['Open', 'To-do', 'Resolved', 'In-Review', 'Closed'], default: 'Open' },
+    resolvedTime: {
+        type: Date,
+        default: null,
+    },
     comments: [{
         userId: { type: Schema.Types.ObjectId, ref: 'User', default: null },
         comment: { type: String, default: '' },

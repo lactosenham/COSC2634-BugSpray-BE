@@ -22,9 +22,19 @@ projectController.createProject = async (req, res) => {
     }
 };
 
+
 projectController.getAllProjects = async (req, res) => {
     try {
-        const projects = await Project.find();
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
         res.status(200).send(projects);
     } catch (error) {
         console.error(error);
@@ -32,12 +42,24 @@ projectController.getAllProjects = async (req, res) => {
     }
 };
 
+
 projectController.getProjectById = async (req, res) => {
     try {
-        const project = await Project.findById(req.params.id);
+        const projectId = req.params.id;
+        const userId = req.user.userId;
+
+        const project = await Project.findOne({
+            _id: projectId,
+            $or: [
+                { managerId: userId }, 
+                { managers: userId },    
+                { developers: userId },  
+            ],
+        });
         if (!project) {
-            return res.status(404).send('Project not found');
+            return res.status(404).send('Project not found or you do not have access.');
         }
+
         res.status(200).send(project);
     } catch (error) {
         console.error(error);
@@ -95,8 +117,8 @@ projectController.updateProject = async (req, res) => {
             return res.status(404).send('Project not found');
         }
 
-        if (project.managerId.toString() !== req.user.userId) {
-            return res.status(403).send('Access denied. Only the creating manager can modify this project.');
+        if (project.managerId.toString() !== req.user.userId && !project.managers.includes(req.user.userId)) {
+            return res.status(403).send('Access denied. Only the creating manager or added managers can modify this project.');
         }
 
         if (name) {
@@ -135,14 +157,11 @@ projectController.deleteProject = async (req, res) => {
     }
 };
 
-projectController.addDeveloper = async (req, res) => {
+projectController.addMember = async (req, res) => {
     try {
-        const { projectId, developerIds } = req.body;
+        const { projectId, memberIds } = req.body;
 
-        // Ensure developerIds is always an array
-        const developerIdsArray = Array.isArray(developerIds) ? developerIds : [developerIds];
-
-        console.log("Array of devs being added: ", developerIdsArray.join(', '));
+        const memberIdsArray = Array.isArray(memberIds) ? memberIds : [memberIds];
 
         const project = await Project.findById(projectId);
 
@@ -150,25 +169,36 @@ projectController.addDeveloper = async (req, res) => {
             return res.status(404).send('Project not found');
         }
 
-        if (project.managerId.toString() !== req.user.userId) {
-            return res.status(403).send('Access denied. Only the creating manager can modify this project.');
+        if (project.managerId.toString() !== req.user.userId && !project.managers.includes(req.user.userId)) {
+            return res.status(403).send('Access denied. Only the creating manager or added managers can modify this project.');
         }
 
-        let addedDevelopers = [];
+        let addedMembers = [];
 
-        for (const id of developerIdsArray) {
-            if (!project.developers.includes(id)) {
-                project.developers.push(id);
-                addedDevelopers.push(id);
+        for (const id of memberIdsArray) {
+            if (!project.developers.includes(id) && !project.managers.includes(id)) {
+                // Check if the member is a manager or developer
+                const user = await User.findById(id);
+                if (!user) {
+                    return res.status(404).send(`User with ID ${id} not found`);
+                }
+
+                if (user.role === 'Manager') {
+                    project.managers.push(id);
+                } else if (user.role === 'Developer') {
+                    project.developers.push(id);
+                }
+
+                addedMembers.push(id);
             }
         }
 
-        if (addedDevelopers.length > 0) {
+        if (addedMembers.length > 0) {
             await project.save();
-            console.log(`Developers [${addedDevelopers.join(', ')}] added to project ${projectId}`);
-            res.status(200).send(`Developers added successfully: ${addedDevelopers.join(', ')}`);
+            console.log(`Members [${addedMembers.join(', ')}] added to project ${projectId}`);
+            res.status(200).send(`Members added successfully: ${addedMembers.join(', ')}`);
         } else {
-            res.status(400).send('No new developers were added. They might already be assigned to this project.');
+            res.status(400).send('No new members were added. They might already be assigned to this project.');
         }
     } catch (error) {
         console.error(error);
@@ -186,8 +216,8 @@ projectController.removeDeveloper = async (req, res) => {
             return res.status(404).send('Project not found');
         }
 
-        if (project.managerId.toString() !== req.user.userId) {
-            return res.status(403).send('Access denied. Only the creating manager can modify this project.');
+        if (project.managerId.toString() !== req.user.userId && !project.managers.includes(req.user.userId)) {
+            return res.status(403).send('Access denied. Only the creating manager or added managers can modify this project.');
         }
 
         if (!project.developers.includes(developerId)) {
@@ -215,7 +245,6 @@ projectController.findDeveloper = async (req, res) => {
             return res.status(404).send('Project not found');
         }
 
-        // Filter developers whose names partially match the provided partialName
         const matchingDevelopers = project.developers.filter(developer => developer.name.includes(partialName));
 
         res.status(200).json(matchingDevelopers);

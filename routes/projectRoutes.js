@@ -8,11 +8,11 @@ router.get('/getAllDeveloper', projectController.getAllDeveloper);
 
 router.post('/create', isManager, projectController.createProject);
 
-router.get('/all', projectController.getAllProjects);
+router.get('/all', isAuthenticated, projectController.getAllProjects);
 
 router.get('/my-projects', isAuthenticated, projectController.getMyProjects);
 
-router.get('/:id', projectController.getProjectById);
+router.get('/:id', isAuthenticated, projectController.getProjectById);
 
 router.post('/search-by-name', projectController.searchProjectByName);
 
@@ -20,7 +20,7 @@ router.patch('/update/:id', isManager, projectController.updateProject);
 
 router.delete('/delete/:id', isManager, projectController.deleteProject);
 
-router.post('/add-developer', isManager, projectController.addDeveloper);
+router.post('/add-member', isManager, projectController.addMember);
 
 router.post('/remove-developer', isManager, projectController.removeDeveloper);
 

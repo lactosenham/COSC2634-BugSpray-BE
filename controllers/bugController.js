@@ -25,10 +25,15 @@ bugController.reportBug = async (req, res) => {
             stepsToReproduce,
             deadline,
             status,
+            resolvedTime: null,
             comments
         });
 
         await newBug.save();
+
+        project.bugs.push(newBug._id);
+        await project.save();
+
         res.status(201).send(newBug);
     } catch (error) {
         console.error(error);
@@ -76,8 +81,20 @@ bugController.getBugById = async (req, res) => {
 bugController.getBugsForProject = async (req, res) => {
     try {
         const projectId = req.params.projectId;
+        const userId = req.user.userId;
 
-        // Validate projectId if necessary
+        const isUserAssigned = await Project.exists({
+            _id: projectId,
+            $or: [
+                { managerId: userId },  
+                { managers: userId },   
+                { developers: userId }, 
+            ],
+        });
+
+        if (!isUserAssigned) {
+            return res.status(403).send('You do not have access to bugs in this project.');
+        }
 
         const bugs = await Bug.find({ projectId }).populate('assignedTo', 'username');
         if (!bugs || bugs.length === 0) {
@@ -101,21 +118,25 @@ bugController.updateBug = async (req, res) => {
             description,
             stepsToReproduce, 
             deadline, 
-            status, 
-            comments 
+            status
         } = req.body;
 
-        if (status === 'Done') {
-            // Fetch the existing bug to check for comments
+
+        if (status === 'Resolved' && !req.body.hasOwnProperty('resolvedTime')) {
+            // Fetch the existing bug to check for comments and save new date
             const existingBug = await Bug.findById(req.params.id);
+            req.body.resolvedTime = new Date();
 
             // Check if there is at least one comment
             if (!existingBug.comments || existingBug.comments.length === 0 || !existingBug.comments[0].comment) {
-                return res.status(400).send('At least one comment is required to move to "Done" status.');
+                return res.status(400).send('At least one comment is required to move to "Resolved" status.');
             }
-        }
 
-        // Prepare the update object
+        } else if (status !== 'Resolved') {
+            req.body.resolvedTime = null;
+        }
+        
+        // Update object
         const updateData = {
             ...(assignedTo && { assignedTo }),
             ...(priority !== undefined && { priority }),
@@ -125,8 +146,9 @@ bugController.updateBug = async (req, res) => {
             ...(stepsToReproduce && { stepsToReproduce }),
             ...(deadline && { deadline }),
             ...(status && { status }),
-            ...(comments && { comments })
+            resolvedTime: req.body.resolvedTime
         };
+
 
         const bug = await Bug.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!bug) {
@@ -154,6 +176,53 @@ bugController.deleteBug = async (req, res) => {
     }
 };
 
+bugController.addCommentToBug = async (req, res) => {
+    try {
+        const { bugId } = req.params;
+        const { comment } = req.body;
+
+        if (!comment) {
+            return res.status(400).send('Comment is required.');
+        }
+
+        const addCommentToBug = async (bugId, userId, comment) => {
+            try {
+                const bug = await Bug.findById(bugId);
+
+                if (!bug) {
+                    console.error(`Bug with ID ${bugId} not found`);
+                    return null;
+                }
+
+                const newComment = {
+                    userId,
+                    comment,
+                    date: new Date(),
+                };
+
+                bug.comments.push(newComment);
+                await bug.save();
+
+                console.log(`Comment added to Bug ${bugId}`);
+                return newComment;
+            } catch (error) {
+                console.error('Error adding comment to bug:', error);
+                return null;
+            }
+        };
+
+        const newComment = await addCommentToBug(bugId, req.user.userId, comment);
+
+        if (!newComment) {
+            return res.status(404).send(`Bug with ID ${bugId} not found.`);
+        }
+
+        res.status(200).send(newComment);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, addCommentToBug');
+    }
+};
 
 bugController.updateBugWithCommit = async (bugId, commitMessage) => {
     try {
@@ -247,6 +316,36 @@ bugController.searchAndSortBugs = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+bugController.recentlySolvedBugs = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+        console.log('Projects:', projects);
+
+        // Find recently solved bugs for the user's projects
+        const recentlySolvedBugs = await Bug.find({
+            projectId: { $in: projectIds },
+            status: 'Resolved',
+            resolvedTime: { $ne: null },
+        }).sort({ resolvedTime: -1 });
+
+        res.status(200).send(recentlySolvedBugs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, recentlySolvedBugs');
+    }
+};
+
 
 bugController.processGitHubPayload = (payload) => {
     try {

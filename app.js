@@ -11,6 +11,7 @@ const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const bugRoutes = require('./routes/bugRoutes');
 const bugController = require('./controllers/bugController');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -51,6 +52,9 @@ app.use('/projects', projectRoutes);
 
 // Use Bug Routes
 app.use('/bugs', bugRoutes);
+
+// Use User Routes
+app.use('/user', userRoutes);
 
 // Start the server
 app.listen(port, () => {
