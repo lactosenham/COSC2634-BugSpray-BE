@@ -67,6 +67,28 @@ projectController.getProjectById = async (req, res) => {
     }
 };
 
+projectController.getDevelopersInProject = async (req, res) => {
+    try {
+        const projectId = req.params.id;
+
+        const project = await Project.findById(projectId);
+
+        if (!project) {
+            return res.status(404).send('Project not found');
+        }
+
+        const developerIds = project.developers;
+
+        const developers = await User.find({ _id: { $in: developerIds } });
+
+        res.status(200).send(developers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, getDevelopersInProject');
+    }
+};
+
+
 projectController.getMyProjects = async (req, res) => {
     try {
         const assignedProjects = await Project.find({

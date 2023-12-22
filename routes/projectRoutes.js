@@ -14,6 +14,8 @@ router.get('/my-projects', isAuthenticated, projectController.getMyProjects);
 
 router.get('/:id', isAuthenticated, projectController.getProjectById);
 
+router.get('/dev/:id', isAuthenticated, projectController.getDevelopersInProject);
+
 router.post('/search-by-name', projectController.searchProjectByName);
 
 router.patch('/update/:id', isManager, projectController.updateProject);
