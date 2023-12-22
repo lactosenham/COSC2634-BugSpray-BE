@@ -28,21 +28,21 @@ userController.viewProfile = async (req, res) => {
 };
 
 //Nhu: im not sure if u guys want to put this function on userController or projectController. Binh pls test and take care of this part for me thanks.
-// userController.getAllDeveloper = async (req, res) => {
-//     try {
-//         const devs = [];
-//         const users = await User.find();
-//         for (const user of users) {
-//             if (user.role === "Developer") {
-//                 devs.push(user);
-//             }
-//         }
-//         res.status(200).send(devs);
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).send('Server error, findDevelopers');
-//     }
-// };
+userController.getAllDeveloper = async (req, res) => {
+    try {
+        const devs = [];
+        const users = await User.find();
+        for (const user of users) {
+            if (user.role === "Developer") {
+                devs.push(user);
+            }
+        }
+        res.status(200).send(devs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, findDevelopers');
+    }
+};
 
 userController.findDeveloper = async (req, res) => {
     try {
