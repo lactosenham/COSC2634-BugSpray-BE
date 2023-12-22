@@ -17,6 +17,7 @@ bugController.reportBug = async (req, res) => {
 
             projectId: project._id,
             reportedBy: req.user.userId,
+            reportTime: Date.now(),
             assignedTo,
             priority,
             severity,
@@ -321,6 +322,8 @@ bugController.recentlySolvedBugs = async (req, res) => {
     try {
         const userId = req.user.userId;
 
+        console.log("Hello")
+
         const projects = await Project.find({
             $or: [
                 { managerId: userId },
@@ -330,19 +333,103 @@ bugController.recentlySolvedBugs = async (req, res) => {
         });
 
         const projectIds = projects.map(project => project._id);
-        console.log('Projects:', projects);
 
-        // Find recently solved bugs for the user's projects
-        const recentlySolvedBugs = await Bug.find({
+        console.log(projectIds)
+
+        const recentlySolved = await Bug.find({
             projectId: { $in: projectIds },
             status: 'Resolved',
             resolvedTime: { $ne: null },
         }).sort({ resolvedTime: -1 });
 
-        res.status(200).send(recentlySolvedBugs);
+        res.status(200).send(recentlySolved);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error, recentlySolvedBugs');
+    }
+};
+
+bugController.totalBugsReportedLast6Months = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+
+        //Find bugs 
+        const bugs = await Bug.find({
+            projectId: { $in: projectIds },
+            reportTime: { $gte: sixMonthsAgo },
+        });
+
+        const monthlyCounts = Array(6).fill(0);
+
+        bugs.forEach((bug) => {
+            const reportDate = new Date(bug.reportTime);
+            const monthDifference = (sixMonthsAgo.getMonth() - reportDate.getMonth() +
+                                     (sixMonthsAgo.getFullYear() - reportDate.getFullYear()) * 12) % 6;
+
+
+            if (monthDifference <= 0 && monthDifference >= -6) {
+                monthlyCounts[(6 + monthDifference) % 6]++;
+            } 
+        });
+
+        //Oldest to newest
+        const reversedCounts = monthlyCounts.reverse();
+
+        res.status(200).send(reversedCounts);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, totalBugsReportedLast6Months');
+    }
+};
+
+
+bugController.bugsBySeverityChart = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+
+        const bugs = await Bug.find({
+            projectId: { $in: projectIds },
+            status: 'In Progress',
+        });
+
+        //3 level i think
+        const severityCounts = [0, 0, 0];
+
+
+        bugs.forEach(bug => {
+            const severity = bug.severity - 1; 
+            severityCounts[severity]++;
+        });
+
+        res.status(200).send(severityCounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, bugsBySeverity');
     }
 };
 

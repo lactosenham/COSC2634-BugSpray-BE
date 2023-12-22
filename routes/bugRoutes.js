@@ -10,6 +10,12 @@ router.get('/all', bugController.getAllBugs);
 
 router.get('/mybugs', isAuthenticated, bugController.getBugsForUser);
 
+router.get('/solved', isAuthenticated, bugController.recentlySolvedBugs);
+
+router.get('/total-bugs-last-6-months', isAuthenticated, bugController.totalBugsReportedLast6Months);
+
+router.get('/severity-chart', isAuthenticated, bugController.bugsBySeverityChart);
+
 router.get('/:id', bugController.getBugById);
 
 router.get('/project/:projectId', isAuthenticated, bugController.getBugsForProject);
@@ -24,6 +30,5 @@ router.get('/total/:projectId', bugController.getTotalBugsInProject);
 
 router.post('/sort', bugController.searchAndSortBugs);
 
-router.get('/recently-solved', isAuthenticated, bugController.recentlySolvedBugs);
 
 module.exports = router;
