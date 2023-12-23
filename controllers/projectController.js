@@ -229,32 +229,44 @@ projectController.addMember = async (req, res) => {
 };
 
 
-projectController.removeDeveloper = async (req, res) => {
+projectController.removeMember = async (req, res) => {
     try {
-        const { projectId, developerId } = req.body;
+        const { projectId, memberId } = req.body;
         const project = await Project.findById(projectId);
 
         if (!project) {
             return res.status(404).send('Project not found');
         }
 
-        if (project.managerId.toString() !== req.user.userId && !project.managers.includes(req.user.userId)) {
-            return res.status(403).send('Access denied. Only the creating manager or added managers can modify this project.');
+        const isManagerRequesting = project.managers.includes(req.user.userId) || project.managerId.toString() === req.user.userId;
+
+        // Check if the member is a developer and allow any manager to remove them
+        if (project.developers.includes(memberId)) {
+            if (!isManagerRequesting) {
+                return res.status(403).send('Access denied. Only managers can remove developers.');
+            }
+            project.developers = project.developers.filter(dev => dev.toString() !== memberId);
+        } 
+        // Check if the member is a manager and allow only self-removal
+        else if (project.managers.includes(memberId)) {
+            if (memberId !== req.user.userId) {
+                return res.status(403).send('Access denied. Managers can only remove themselves.');
+            }
+            project.managers = project.managers.filter(mgr => mgr.toString() !== memberId);
+        } else {
+            return res.status(400).send('Member not found in this project');
         }
 
-        if (!project.developers.includes(developerId)) {
-            return res.status(400).send('Developer not found in this project');
-        }
-
-        project.developers = project.developers.filter(dev => dev.toString() !== developerId);
         await project.save();
 
-        res.status(200).send('Developer removed successfully');
+        res.status(200).send('Member removed successfully');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
     }
 };
+
+
 
 projectController.findDeveloper = async (req, res) => {
     try {

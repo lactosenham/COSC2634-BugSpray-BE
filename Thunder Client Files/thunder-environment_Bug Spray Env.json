@@ -1,24 +1,20 @@
 {
     "client": "Thunder Client",
     "environmentName": "Bug Spray Env",
-    "dateExported": "2023-12-09T10:20:55.357Z",
+    "dateExported": "2023-12-23T05:14:51.203Z",
     "version": "1.0",
     "variables": [
         {
             "name": "bugSplat.devToken",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTVjNmU1YTBlMzc1ZTBmMTc5NTdjYjgiLCJyb2xlIjoiRGV2ZWxvcGVyIiwiZGV2ZWxvcGVyVHlwZSI6IkNsb3VkIiwiaWF0IjoxNzAxNzY0OTA3LCJleHAiOjE3MDE4NTEzMDd9.iD4VeFcw16Qqa97HKASpmZ-cxQrbQZ9yPnvVzgOWf4I"
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTVjNmU1YTBlMzc1ZTBmMTc5NTdjYjgiLCJyb2xlIjoiRGV2ZWxvcGVyIiwiZGV2ZWxvcGVyVHlwZSI6IkNsb3VkIiwiaWF0IjoxNzAzMjU0MDIyLCJleHAiOjE3MDMzNDA0MjJ9.Z3EqCAs8uOP2_1tAxI0whj_qcum0d6trR-ZZXN3OuDY"
         },
         {
             "name": "bugSplat.managerToken",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTYwOWRiZWM0MGNjMjAzMmJkMjgzYTgiLCJyb2xlIjoiTWFuYWdlciIsImRldmVsb3BlclR5cGUiOm51bGwsImlhdCI6MTcwMTc2NDk5MCwiZXhwIjoxNzAxODUxMzkwfQ.R03H2OPrIyiugds-cWdxlljzpz5SLGYoGXj1WlOl31I"
-        },
-        {
-            "name": "bugSplat.managerToken2",
-            "value": "1"
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTYwOWRiZWM0MGNjMjAzMmJkMjgzYTgiLCJyb2xlIjoiTWFuYWdlciIsImRldmVsb3BlclR5cGUiOm51bGwsImlhdCI6MTcwMzI1MTUyMiwiZXhwIjoxNzAzMzM3OTIyfQ.ZOH2muf1p6bWowR79YEC1lyUGX4W-nft53dVDFSAy4M"
         },
         {
             "name": "bugSplat.projectID",
-            "value": "6565a987d22db7c3179054da"
+            "value": "657ab93d72fd30ada0105ba7"
         },
         {
             "name": "bugSplat.projectID.static",
@@ -30,15 +26,23 @@
         },
         {
             "name": "bugSplat.bugID",
-            "value": "6565a988d22db7c3179054f5"
+            "value": "657b0cae72fd30ada0105c15"
         },
         {
             "name": "bugSplat.devID",
             "value": "654f3dd6426ecc61017344d4"
         },
         {
-            "name": "bugSplat.managerID",
-            "value": "name"
+            "name": "bugSplat.devHackID",
+            "value": "655c6e5a0e375e0f17957cb8"
+        },
+        {
+            "name": "bugSplat.managerID2",
+            "value": "65866bf4d9ecb1f3a3ffd963"
+        },
+        {
+            "name": "bugSplat.managerToken2",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTg2NmJmNGQ5ZWNiMWYzYTNmZmQ5NjMiLCJyb2xlIjoiTWFuYWdlciIsImRldmVsb3BlclR5cGUiOm51bGwsImlhdCI6MTcwMzMwODI5NywiZXhwIjoxNzAzMzk0Njk3fQ.pjMjiuV9bDuBXt_9ETDa0N0k6a4IqbxigGm5G-_3Lbo"
         }
     ]
 }

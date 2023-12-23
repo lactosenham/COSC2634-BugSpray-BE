@@ -1,0 +1,33 @@
+{
+    "client": "Thunder Client",
+    "environmentName": "(Global Env)",
+    "dateExported": "2023-12-23T05:14:45.108Z",
+    "version": "1.0",
+    "global": true,
+    "variables": [
+        {
+            "name": "dev_token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTVjNmU1YTBlMzc1ZTBmMTc5NTdjYjgiLCJyb2xlIjoiRGV2ZWxvcGVyIiwiZGV2ZWxvcGVyVHlwZSI6IkNsb3VkIiwiaWF0IjoxNzAxMDg2NDIzLCJleHAiOjE3MDExNzI4MjN9.4PktsgHz3luojXNIqaXL_TO23kIeYShzrngLjCRyyTA"
+        },
+        {
+            "name": "manager_token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTYwOWRiZWM0MGNjMjAzMmJkMjgzYTgiLCJyb2xlIjoiTWFuYWdlciIsImRldmVsb3BlclR5cGUiOm51bGwsImlhdCI6MTcwMTA4NjUxNSwiZXhwIjoxNzAxMTcyOTE1fQ.IkW9Ko48xlFfAQAD4BCbZBGjT8EcBK5IdzUyt9vumO0"
+        },
+        {
+            "name": "base_project_url",
+            "value": "localhost:3000/projects"
+        },
+        {
+            "name": "base_auth_url",
+            "value": "localhost:3000/auth"
+        },
+        {
+            "name": "base_bug_url",
+            "value": "localhost:3000/bugs"
+        },
+        {
+            "name": "base_user_url",
+            "value": "localhost:3000/user"
+        }
+    ]
+}

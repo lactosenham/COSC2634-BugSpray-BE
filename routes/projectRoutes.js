@@ -24,7 +24,7 @@ router.delete('/delete/:id', isManager, projectController.deleteProject);
 
 router.post('/add-member', isManager, projectController.addMember);
 
-router.post('/remove-developer', isManager, projectController.removeDeveloper);
+router.post('/remove-member', isManager, projectController.removeMember);
 
 router.post('/findDevelopers/:projectId', isManager, projectController.findDeveloper);
 
