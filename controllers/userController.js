@@ -44,68 +44,51 @@ userController.getAllDeveloper = async (req, res) => {
     }
 };
 
-userController.findDeveloper = async (req, res) => {
-    try {
-        const { projectId } = req.params;
-        const { partialName } = req.body;
-
-        const project = await Project.findById(projectId).populate('developers', 'name');
-
-        if (!project) {
-            return res.status(404).send('Project not found');
-        }
-
-        // Filter developers whose names partially match the provided partialName
-        const matchingDevelopers = project.developers.filter(developer => developer.name.includes(partialName));
-
-        res.status(200).json(matchingDevelopers);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error, findDevelopers');
-    }
-};
-
 userController.updateUser = async (req, res) => {
     try {
         const { username, password, name, role, developerType } = req.body;
-        const user = await User.findById(req.params.id);
-
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
+        const userId = req.params.id;
 
         // Check if the user making the request is the same as the user being updated
-        if (req.user.userId !== user._id.toString()) {
+        if (req.user.userId !== userId) {
             return res.status(403).send('Access denied. You can only update your own profile.');
         }
 
-        // Update the user fields if they are provided
-        if (username) user.username = username;
+        const updateData = {};
 
-        if (password) {
-            // Password validation
+        // Add fields to the update object only if they are provided and not null/undefined
+        if (username != null) updateData.username = username;
+        if (name != null) updateData.name = name;
+        if (role != null) updateData.role = role;
+        if (developerType != null) updateData.developerType = developerType;
+
+        // Password Validation
+        if (password != null) {
             const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
             if (!passwordRegex.test(password)) {
                 return res.status(400).send('Password does not meet the required criteria');
             }
-
             const saltRounds = 10;
-            const hashedPassword = await bcrypt.hash(password, saltRounds);
-            user.password = hashedPassword;
+            updateData.password = await bcrypt.hash(password, saltRounds);
         }
 
-        if (name) user.name = name;
-        if (role) user.role = role;
-        if (developerType) user.developerType = developerType;
+        // Update only if updateData is not empty
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).send('No valid fields provided for update');
+        }
 
-        await user.save();
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+        if (!updatedUser) {
+            return res.status(404).send('User not found');
+        }
 
         res.status(200).send({
-            id: user._id,
-            username: user.username,
-            name: user.name,
-            role: user.role,
-            developerType: user.developerType
+            id: updatedUser._id,
+            username: updatedUser.username,
+            name: updatedUser.name,
+            role: updatedUser.role,
+            developerType: updatedUser.developerType
         });
     } catch (error) {
         console.error(error);

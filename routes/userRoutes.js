@@ -7,10 +7,7 @@ const router = express.Router();
 router.get('/profile', isAuthenticated, userController.viewProfile);
 
 // Get all developers
-// router.get('/getAllDeveloper', isAuthenticated, userController.getAllDeveloper);
-
-// Find a developer by partial name within a project
-router.post('/findDevelopers/:projectId', isManager, userController.findDeveloper);
+router.get('/getAllDeveloper', isAuthenticated, userController.getAllDeveloper);
 
 // Update user information
 router.patch('/update/:id', isAuthenticated, userController.updateUser);
