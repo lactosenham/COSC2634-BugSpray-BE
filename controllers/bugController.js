@@ -342,6 +342,9 @@ bugController.recentlySolvedBugs = async (req, res) => {
             resolvedTime: { $ne: null },
         }).sort({ resolvedTime: -1 });
 
+        console.log("List of recently resolved bugs: ")
+        console.log(recentlySolved)
+
         res.status(200).send(recentlySolved);
     } catch (error) {
         console.error(error);

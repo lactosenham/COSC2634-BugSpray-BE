@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "BugSpray",
-    "dateExported": "2023-12-23T05:14:25.438Z",
+    "dateExported": "2023-12-23T09:48:07.705Z",
     "version": "1.1",
     "folders": [
         {
@@ -1013,19 +1013,60 @@
             "_id": "edcf2e64-cd50-414c-a70e-8276a4bfb4fb",
             "colId": "a0188b29-c45d-4a12-b91b-da9e9a4c276b",
             "containerId": "5f15aa2b-884e-4b0c-b2a9-fa24b2b0ad47",
-            "name": "Update bug - Status: Done",
+            "name": "Update bug - Status: In Progress",
             "url": "{{base_bug_url}}/update/{{bugSplat.bugID}}",
             "method": "PATCH",
             "sortNum": 134921.9,
             "created": "2023-11-26T14:50:28.683Z",
-            "modified": "2023-11-28T07:09:36.977Z",
+            "modified": "2023-12-23T09:01:44.358Z",
             "headers": [],
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"_id\": \"65634b46c2ce751794b0525a\",\n  \"projectId\": \"6562b3c40d8866acfb2904d0\",\n  \"reportedBy\": \"655c6e5a0e375e0f17957cb8\",\n  \"assignedTo\": null,\n  \"priority\": 3,\n  \"severity\": 2,\n  \"name\": \"Bug 5\",\n  \"description\": \"This is bug number 5\",\n  \"stepsToReproduce\": \"Steps to reproduce the bug...\",\n  \"deadline\": \"2023-11-26T00:00:00.000Z\",\n  \"status\": \"Done\",\n  \"comments\": [],\n  \"__v\": 0\n}",
+                "raw": "{\n  \"status\": \"In Progress\"\n}",
                 "form": []
             },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.devToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "583e2d0d-a3ac-48a6-a327-9a33d9e54db3",
+            "colId": "a0188b29-c45d-4a12-b91b-da9e9a4c276b",
+            "containerId": "5f15aa2b-884e-4b0c-b2a9-fa24b2b0ad47",
+            "name": "Update bug - Status: Resolved",
+            "url": "{{base_bug_url}}/update/{{bugSplat.bugID}}",
+            "method": "PATCH",
+            "sortNum": 134941.5,
+            "created": "2023-12-23T07:16:44.862Z",
+            "modified": "2023-12-23T08:06:02.515Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"status\": \"Resolved\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.devToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "3145e5bf-0570-4ab8-94a7-b1d2f0eea008",
+            "colId": "a0188b29-c45d-4a12-b91b-da9e9a4c276b",
+            "containerId": "5f15aa2b-884e-4b0c-b2a9-fa24b2b0ad47",
+            "name": "Get Recently Resolved Bugs",
+            "url": "{{base_bug_url}}/solved",
+            "method": "GET",
+            "sortNum": 134961,
+            "created": "2023-12-23T06:57:44.440Z",
+            "modified": "2023-12-23T07:02:56.815Z",
+            "headers": [],
+            "params": [],
             "auth": {
                 "type": "bearer",
                 "bearer": "{{bugSplat.devToken}}"
@@ -1113,6 +1154,42 @@
                 "raw": "{\n  \"projectId\": \"{{bugSplat.projectID}}\", \n  \"memberIds\": \"{{bugSplat.managerID2}}\"\n}\n",
                 "form": []
             },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "ba4f227f-2385-4551-bb0e-5e94a73643d0",
+            "colId": "a0188b29-c45d-4a12-b91b-da9e9a4c276b",
+            "containerId": "5f15aa2b-884e-4b0c-b2a9-fa24b2b0ad47",
+            "name": "Total Bugs last 6 Months",
+            "url": "{{base_bug_url}}/total-bugs-last-6-months",
+            "method": "GET",
+            "sortNum": 300000,
+            "created": "2023-12-23T08:49:00.057Z",
+            "modified": "2023-12-23T08:53:02.904Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "5a06bf7e-11dc-4731-9531-5805081d4b2f",
+            "colId": "a0188b29-c45d-4a12-b91b-da9e9a4c276b",
+            "containerId": "5f15aa2b-884e-4b0c-b2a9-fa24b2b0ad47",
+            "name": "Severity Chart",
+            "url": "{{base_bug_url}}/severity-chart",
+            "method": "GET",
+            "sortNum": 310000,
+            "created": "2023-12-23T08:52:40.743Z",
+            "modified": "2023-12-23T08:53:23.258Z",
+            "headers": [],
+            "params": [],
             "auth": {
                 "type": "bearer",
                 "bearer": "{{bugSplat.managerToken}}"

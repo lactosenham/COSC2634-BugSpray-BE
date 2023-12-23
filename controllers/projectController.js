@@ -281,6 +281,7 @@ projectController.findDeveloper = async (req, res) => {
 
         const matchingDevelopers = project.developers.filter(developer => developer.name.includes(partialName));
 
+        console.log("Matching Developers: ", matchingDevelopers)
         res.status(200).json(matchingDevelopers);
     } catch (error) {
         console.error(error);
