@@ -1,0 +1,287 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "BugSpray - Project",
+    "dateExported": "2023-12-24T14:03:17.773Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Project",
+            "containerId": "",
+            "created": "2023-12-23T09:54:32.761Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "011d699a-1f67-4a25-adce-f541133716ee",
+            "name": "Add Member",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "created": "2023-12-23T09:54:32.773Z",
+            "sortNum": 130000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "c939056b-6992-40e1-bc5f-a08902772e14",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "011d699a-1f67-4a25-adce-f541133716ee",
+            "name": "Add developer",
+            "url": "{{base_project_url}}/add-member",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-12-23T09:54:32.763Z",
+            "modified": "2023-12-23T09:54:32.763Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"projectId\": \"{{bugSplat.projectID}}\", \n  \"memberIds\": \"{{bugSplat.devID}}\"\n}\n",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "95eaad01-e89b-431d-a7b2-b3f18c269534",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Create Project",
+            "url": "{{base_project_url}}/create",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-12-23T09:54:32.780Z",
+            "modified": "2023-12-23T09:54:32.780Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Fourth Project for Man manager\",\n  \"description\": \"This is a second test project for Mann\",\n  \"developers\": [],\n  \"bugs\": []\n}\n",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": [
+                {
+                    "type": "res-code",
+                    "custom": "",
+                    "action": "equal",
+                    "value": "201"
+                },
+                {
+                    "type": "set-env-var",
+                    "custom": "json._id",
+                    "action": "setto",
+                    "value": "{{bugSplat.projectID}}"
+                },
+                {
+                    "type": "set-env-var",
+                    "custom": "json.name",
+                    "action": "setto",
+                    "value": "{{bugSplat.projectName}}"
+                }
+            ]
+        },
+        {
+            "_id": "6c4e6210-4db1-45cf-be73-20867e585e75",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Get all Project ",
+            "url": "{{base_project_url}}/all",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2023-12-23T09:54:32.783Z",
+            "modified": "2023-12-23T09:54:32.783Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "40c5bd16-e12f-4a69-b296-289db955f3d8",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Get my Project - Developer",
+            "url": "{{base_project_url}}/my-projects",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2023-12-23T09:54:32.785Z",
+            "modified": "2023-12-23T09:54:32.785Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.devToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "5ce72db9-8f4e-419c-950b-4b0f90ef086c",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Get my Projects - Manager",
+            "url": "{{base_project_url}}/my-projects",
+            "method": "GET",
+            "sortNum": 55000,
+            "created": "2023-12-23T09:54:32.787Z",
+            "modified": "2023-12-23T09:54:32.787Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "737dea21-fd04-462c-962d-5b6cb3c66b10",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Get Project by ID",
+            "url": "{{base_project_url}}/{{bugSplat.projectID.static}}",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2023-12-23T09:54:32.788Z",
+            "modified": "2023-12-23T10:05:18.747Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "32d90214-de5c-4430-9c0a-638d425a8e2b",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Search project by name ",
+            "url": "{{base_project_url}}/search-by-name",
+            "method": "POST",
+            "sortNum": 70000,
+            "created": "2023-12-23T09:54:32.790Z",
+            "modified": "2023-12-23T09:54:32.790Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"partialName\": \"Fourth\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "7397a2c7-e6ec-4c6b-b497-f65e309a30fc",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Update project - Non creating Manager",
+            "url": "{{base_project_url}}/update/{{bugSplat.projectID}}",
+            "method": "PATCH",
+            "sortNum": 80000,
+            "created": "2023-12-23T09:54:32.791Z",
+            "modified": "2023-12-23T10:00:17.685Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken2}}"
+            },
+            "tests": [
+                {
+                    "type": "res-code",
+                    "custom": "",
+                    "action": "equal",
+                    "value": "403"
+                }
+            ]
+        },
+        {
+            "_id": "48a73f74-de17-4a52-9ffb-9cc1a253fdb0",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Update project - Creating Manager ",
+            "url": "{{base_project_url}}/update/{{bugSplat.projectID}}",
+            "method": "PATCH",
+            "sortNum": 85000,
+            "created": "2023-12-23T09:54:32.792Z",
+            "modified": "2023-12-23T09:54:32.792Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "49d5dbfa-1f88-412b-bbad-b919b0e17ec1",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Find developer in project",
+            "url": "{{base_project_url}}/findDevelopers/{{bugSplat.projectID}}",
+            "method": "POST",
+            "sortNum": 120000,
+            "created": "2023-12-23T09:54:32.793Z",
+            "modified": "2023-12-23T10:05:51.953Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"partialName\": \"h\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "cf5599b1-9490-4964-b3c1-55e93b71fc19",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "60c59272-9745-43c4-87c6-d691ae5c00fb",
+            "name": "Find All developers in Project",
+            "url": "{{base_project_url}}/dev/{{bugSplat.projectID}}",
+            "method": "GET",
+            "sortNum": 130000,
+            "created": "2023-12-23T09:54:32.795Z",
+            "modified": "2023-12-23T09:56:45.440Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "cd7613bf-8030-4c63-a9b4-34bd7e284a64",
+            "colId": "c358c871-29b5-475b-b07a-347e44ca02ef",
+            "containerId": "011d699a-1f67-4a25-adce-f541133716ee",
+            "name": "Add Manager",
+            "url": "{{base_project_url}}/add-member",
+            "method": "POST",
+            "sortNum": 290000,
+            "created": "2023-12-23T09:54:32.808Z",
+            "modified": "2023-12-23T09:54:32.808Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"projectId\": \"{{bugSplat.projectID}}\", \n  \"memberIds\": \"{{bugSplat.managerID2}}\"\n}\n",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.managerToken}}"
+            },
+            "tests": []
+        }
+    ]
+}

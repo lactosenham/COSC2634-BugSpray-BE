@@ -1,12 +1,12 @@
 {
     "client": "Thunder Client",
     "environmentName": "Bug Spray Env",
-    "dateExported": "2023-12-23T09:48:29.198Z",
+    "dateExported": "2023-12-24T14:04:02.456Z",
     "version": "1.0",
     "variables": [
         {
             "name": "bugSplat.devToken",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTVjNmU1YTBlMzc1ZTBmMTc5NTdjYjgiLCJyb2xlIjoiRGV2ZWxvcGVyIiwiZGV2ZWxvcGVyVHlwZSI6IkNsb3VkIiwiaWF0IjoxNzAzMjU0MDIyLCJleHAiOjE3MDMzNDA0MjJ9.Z3EqCAs8uOP2_1tAxI0whj_qcum0d6trR-ZZXN3OuDY"
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTVjNmU1YTBlMzc1ZTBmMTc5NTdjYjgiLCJyb2xlIjoiRGV2ZWxvcGVyIiwiZGV2ZWxvcGVyVHlwZSI6IkNsb3VkIiwiaWF0IjoxNzAzNDI1NjYzLCJleHAiOjE3MDM1MTIwNjN9.alOX09WkWI7PJEMuCD4ZHvsDY6gfQ0lLDeqCwz8FcgU"
         },
         {
             "name": "bugSplat.managerToken",
@@ -14,7 +14,7 @@
         },
         {
             "name": "bugSplat.projectID",
-            "value": "657ab93d72fd30ada0105ba7"
+            "value": "6586af2538ed0d583060274c"
         },
         {
             "name": "bugSplat.projectID.static",

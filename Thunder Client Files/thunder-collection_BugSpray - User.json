@@ -1,0 +1,76 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "BugSpray - User",
+    "dateExported": "2023-12-24T14:03:12.233Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "8e31a0bc-e294-409e-93da-6c8ae993c888",
+            "name": "User",
+            "containerId": "",
+            "created": "2023-12-23T10:07:50.684Z",
+            "sortNum": 10000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "1b328812-51fc-4755-81bc-a650082dae62",
+            "colId": "ee3e644c-46d3-421c-87b6-c22418fc0871",
+            "containerId": "8e31a0bc-e294-409e-93da-6c8ae993c888",
+            "name": "Get Developer Profile",
+            "url": "{{base_user_url}}/profile",
+            "method": "GET",
+            "sortNum": 120000,
+            "created": "2023-12-23T10:07:50.717Z",
+            "modified": "2023-12-23T10:07:50.717Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.devToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "8368b925-cc74-4da1-be66-8cb84dd23dfd",
+            "colId": "ee3e644c-46d3-421c-87b6-c22418fc0871",
+            "containerId": "8e31a0bc-e294-409e-93da-6c8ae993c888",
+            "name": "Get All Developers",
+            "url": "{{base_user_url}}/getAllDeveloper",
+            "method": "GET",
+            "sortNum": 240000,
+            "created": "2023-12-23T10:07:50.728Z",
+            "modified": "2023-12-23T10:07:50.728Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.devToken}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "52be8bb2-c14b-4fdf-ac3e-0596f8530536",
+            "colId": "ee3e644c-46d3-421c-87b6-c22418fc0871",
+            "containerId": "8e31a0bc-e294-409e-93da-6c8ae993c888",
+            "name": "Update User Information",
+            "url": "{{base_user_url}}/update/{{bugSplat.devHackID}}",
+            "method": "PATCH",
+            "sortNum": 270000,
+            "created": "2023-12-23T10:07:50.729Z",
+            "modified": "2023-12-23T10:07:50.729Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"HackerMan\",\n  \"password\": \"P@ssw0rd\",\n  \"name\": \"Timothy Mann\",\n  \"role\": \"Developer\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{bugSplat.devToken}}"
+            },
+            "tests": []
+        }
+    ]
+}
