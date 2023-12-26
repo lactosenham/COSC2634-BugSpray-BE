@@ -42,7 +42,7 @@ bugController.reportBug = async (req, res) => {
     }
 };
 
-module.exports = bugController;
+// module.exports = bugController;
 
 bugController.getAllBugs = async (req, res) => {
     try {
