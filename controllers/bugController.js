@@ -42,7 +42,7 @@ bugController.reportBug = async (req, res) => {
     }
 };
 
-module.exports = bugController;
+// module.exports = bugController;
 
 bugController.getAllBugs = async (req, res) => {
     try {
@@ -266,7 +266,7 @@ bugController.getTotalBugsInProject = async (req, res) => {
 
 bugController.searchAndSortBugs = async (req, res) => {
     try {
-        const { priority, severity, name, status, sortField, sortOrder } = req.body;
+        const { priority, severity, name, status, sortField, sortOrder, assignedFilter} = req.body;
 
         let query = {};
 
@@ -278,7 +278,28 @@ bugController.searchAndSortBugs = async (req, res) => {
             query.status = status;
         }
 
+        const userAssignedProjects = await Project.find({
+            $or: [
+                { managerId: req.user.userId },
+                { developers: req.user.userId }
+            ]
+        });
+
         let bugs = await Bug.find(query);
+
+        if (assignedFilter === 'All') {
+            const projectIds = userAssignedProjects.map(project => project._id);
+            query.projectId = { $in: projectIds };
+            bugs = await Bug.find(query);
+        } else if (assignedFilter === 'Assigned') {
+            const assignedBugs = await Bug.find({
+                assignedTo: req.user.userId,
+                ...query
+            });
+            bugs = assignedBugs.filter(bug => {
+                return userAssignedProjects.some(project => project._id.equals(bug.projectId));
+            });
+        }
 
         // Filter by priority and severity
         if (priority !== undefined || severity !== undefined) {
