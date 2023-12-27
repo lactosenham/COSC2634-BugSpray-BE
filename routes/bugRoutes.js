@@ -28,7 +28,7 @@ router.delete('/delete/:id', isAuthenticated, bugController.deleteBug);
 
 router.get('/total/:projectId', bugController.getTotalBugsInProject);
 
-router.post('/sort', bugController.searchAndSortBugs);
+router.post('/sort', isAuthenticated, bugController.searchAndSortBugs);
 
 
 module.exports = router;
