@@ -17,6 +17,7 @@ bugController.reportBug = async (req, res) => {
 
             projectId: project._id,
             reportedBy: req.user.userId,
+            reportTime: Date.now(),
             assignedTo,
             priority,
             severity,
@@ -25,10 +26,15 @@ bugController.reportBug = async (req, res) => {
             stepsToReproduce,
             deadline,
             status,
+            resolvedTime: null,
             comments
         });
 
         await newBug.save();
+
+        project.bugs.push(newBug._id);
+        await project.save();
+
         res.status(201).send(newBug);
     } catch (error) {
         console.error(error);
@@ -36,7 +42,7 @@ bugController.reportBug = async (req, res) => {
     }
 };
 
-module.exports = bugController;
+// module.exports = bugController;
 
 bugController.getAllBugs = async (req, res) => {
     try {
@@ -76,8 +82,20 @@ bugController.getBugById = async (req, res) => {
 bugController.getBugsForProject = async (req, res) => {
     try {
         const projectId = req.params.projectId;
+        const userId = req.user.userId;
 
-        // Validate projectId if necessary
+        const isUserAssigned = await Project.exists({
+            _id: projectId,
+            $or: [
+                { managerId: userId },  
+                { managers: userId },   
+                { developers: userId }, 
+            ],
+        });
+
+        if (!isUserAssigned) {
+            return res.status(403).send('You do not have access to bugs in this project.');
+        }
 
         const bugs = await Bug.find({ projectId }).populate('assignedTo', 'username');
         if (!bugs || bugs.length === 0) {
@@ -101,21 +119,25 @@ bugController.updateBug = async (req, res) => {
             description,
             stepsToReproduce, 
             deadline, 
-            status, 
-            comments 
+            status
         } = req.body;
 
-        if (status === 'Done') {
-            // Fetch the existing bug to check for comments
+
+        if (status === 'Resolved' && !req.body.hasOwnProperty('resolvedTime')) {
+            // Fetch the existing bug to check for comments and save new date
             const existingBug = await Bug.findById(req.params.id);
+            req.body.resolvedTime = new Date();
 
             // Check if there is at least one comment
             if (!existingBug.comments || existingBug.comments.length === 0 || !existingBug.comments[0].comment) {
-                return res.status(400).send('At least one comment is required to move to "Done" status.');
+                return res.status(400).send('At least one comment is required to move to "Resolved" status.');
             }
-        }
 
-        // Prepare the update object
+        } else if (status !== 'Resolved') {
+            req.body.resolvedTime = null;
+        }
+        
+        // Update object
         const updateData = {
             ...(assignedTo && { assignedTo }),
             ...(priority !== undefined && { priority }),
@@ -125,8 +147,9 @@ bugController.updateBug = async (req, res) => {
             ...(stepsToReproduce && { stepsToReproduce }),
             ...(deadline && { deadline }),
             ...(status && { status }),
-            ...(comments && { comments })
+            resolvedTime: req.body.resolvedTime
         };
+
 
         const bug = await Bug.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!bug) {
@@ -154,6 +177,53 @@ bugController.deleteBug = async (req, res) => {
     }
 };
 
+bugController.addCommentToBug = async (req, res) => {
+    try {
+        const { bugId } = req.params;
+        const { comment } = req.body;
+
+        if (!comment) {
+            return res.status(400).send('Comment is required.');
+        }
+
+        const addCommentToBug = async (bugId, userId, comment) => {
+            try {
+                const bug = await Bug.findById(bugId);
+
+                if (!bug) {
+                    console.error(`Bug with ID ${bugId} not found`);
+                    return null;
+                }
+
+                const newComment = {
+                    userId,
+                    comment,
+                    date: new Date(),
+                };
+
+                bug.comments.push(newComment);
+                await bug.save();
+
+                console.log(`Comment added to Bug ${bugId}`);
+                return newComment;
+            } catch (error) {
+                console.error('Error adding comment to bug:', error);
+                return null;
+            }
+        };
+
+        const newComment = await addCommentToBug(bugId, req.user.userId, comment);
+
+        if (!newComment) {
+            return res.status(404).send(`Bug with ID ${bugId} not found.`);
+        }
+
+        res.status(200).send(newComment);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, addCommentToBug');
+    }
+};
 
 bugController.updateBugWithCommit = async (bugId, commitMessage) => {
     try {
@@ -196,7 +266,7 @@ bugController.getTotalBugsInProject = async (req, res) => {
 
 bugController.searchAndSortBugs = async (req, res) => {
     try {
-        const { priority, severity, name, status, sortField, sortOrder } = req.body;
+        const { priority, severity, name, status, sortField, sortOrder, assignedFilter} = req.body;
 
         let query = {};
 
@@ -208,7 +278,28 @@ bugController.searchAndSortBugs = async (req, res) => {
             query.status = status;
         }
 
+        const userAssignedProjects = await Project.find({
+            $or: [
+                { managerId: req.user.userId },
+                { developers: req.user.userId }
+            ]
+        });
+
         let bugs = await Bug.find(query);
+
+        if (assignedFilter === 'All') {
+            const projectIds = userAssignedProjects.map(project => project._id);
+            query.projectId = { $in: projectIds };
+            bugs = await Bug.find(query);
+        } else if (assignedFilter === 'Assigned') {
+            const assignedBugs = await Bug.find({
+                assignedTo: req.user.userId,
+                ...query
+            });
+            bugs = assignedBugs.filter(bug => {
+                return userAssignedProjects.some(project => project._id.equals(bug.projectId));
+            });
+        }
 
         // Filter by priority and severity
         if (priority !== undefined || severity !== undefined) {
@@ -247,6 +338,125 @@ bugController.searchAndSortBugs = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+bugController.recentlySolvedBugs = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        console.log("Hello")
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+
+        console.log(projectIds)
+
+        const recentlySolved = await Bug.find({
+            projectId: { $in: projectIds },
+            status: 'Resolved',
+            resolvedTime: { $ne: null },
+        }).sort({ resolvedTime: -1 });
+
+        console.log("List of recently resolved bugs: ")
+        console.log(recentlySolved)
+
+        res.status(200).send(recentlySolved);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, recentlySolvedBugs');
+    }
+};
+
+bugController.totalBugsReportedLast6Months = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+
+        //Find bugs 
+        const bugs = await Bug.find({
+            projectId: { $in: projectIds },
+            reportTime: { $gte: sixMonthsAgo },
+        });
+
+        const monthlyCounts = Array(6).fill(0);
+
+        bugs.forEach((bug) => {
+            const reportDate = new Date(bug.reportTime);
+            const monthDifference = (sixMonthsAgo.getMonth() - reportDate.getMonth() +
+                                     (sixMonthsAgo.getFullYear() - reportDate.getFullYear()) * 12) % 6;
+
+
+            if (monthDifference <= 0 && monthDifference >= -6) {
+                monthlyCounts[(6 + monthDifference) % 6]++;
+            } 
+        });
+
+        //Oldest to newest
+        const reversedCounts = monthlyCounts.reverse();
+
+        res.status(200).send(reversedCounts);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, totalBugsReportedLast6Months');
+    }
+};
+
+
+bugController.bugsBySeverityChart = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+
+        const bugs = await Bug.find({
+            projectId: { $in: projectIds },
+            status: 'In Progress',
+        });
+
+        //3 level i think
+        const severityCounts = [0, 0, 0];
+
+
+        bugs.forEach(bug => {
+            const severity = bug.severity - 1; 
+            severityCounts[severity]++;
+        });
+
+        res.status(200).send(severityCounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, bugsBySeverity');
+    }
+};
+
 
 bugController.processGitHubPayload = (payload) => {
     try {

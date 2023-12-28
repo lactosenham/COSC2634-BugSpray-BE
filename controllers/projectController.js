@@ -1,5 +1,5 @@
 const Project = require('../models/project');
-const User = require('../models/user');
+const User =  require('../models/user');
 
 const projectController = {};
 
@@ -22,9 +22,19 @@ projectController.createProject = async (req, res) => {
     }
 };
 
+
 projectController.getAllProjects = async (req, res) => {
     try {
-        const projects = await Project.find();
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
         res.status(200).send(projects);
     } catch (error) {
         console.error(error);
@@ -32,18 +42,52 @@ projectController.getAllProjects = async (req, res) => {
     }
 };
 
+
 projectController.getProjectById = async (req, res) => {
     try {
-        const project = await Project.findById(req.params.id);
+        const projectId = req.params.id;
+        const userId = req.user.userId;
+
+        const project = await Project.findOne({
+            _id: projectId,
+            $or: [
+                { managerId: userId }, 
+                { managers: userId },    
+                { developers: userId },  
+            ],
+        });
         if (!project) {
-            return res.status(404).send('Project not found');
+            return res.status(404).send('Project not found or you do not have access.');
         }
+
         res.status(200).send(project);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error, project');
     }
 };
+
+projectController.getDevelopersInProject = async (req, res) => {
+    try {
+        const projectId = req.params.id;
+
+        const project = await Project.findById(projectId);
+
+        if (!project) {
+            return res.status(404).send('Project not found');
+        }
+
+        const developerIds = project.developers;
+
+        const developers = await User.find({ _id: { $in: developerIds } });
+
+        res.status(200).send(developers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, getDevelopersInProject');
+    }
+};
+
 
 projectController.getMyProjects = async (req, res) => {
     try {
@@ -71,20 +115,20 @@ projectController.getMyProjects = async (req, res) => {
 
 projectController.searchProjectByName = async (req, res) => {
     try {
-        const partialName = req.body.partialName;
-
-        const projects = await Project.find({ name: { $regex: new RegExp(partialName, 'i') } });
-
-        if (projects.length === 0) {
-            return res.status(404).send('No projects found');
-        }
-
-        res.status(200).send(projects);
+      const partialName = req.body.partialName;
+  
+      const projects = await Project.find({ name: { $regex: new RegExp(partialName, 'i') } });
+  
+      if (projects.length === 0) {
+        return res.status(404).send('No projects found');
+      }
+  
+      res.status(200).send(projects);
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error, searchProjectByName');
+      console.error(error);
+      res.status(500).send('Server error, searchProjectByName');
     }
-};
+  };
 
 projectController.updateProject = async (req, res) => {
     try {
@@ -95,14 +139,14 @@ projectController.updateProject = async (req, res) => {
             return res.status(404).send('Project not found');
         }
 
-        if (project.managerId.toString() !== req.user.userId) {
-            return res.status(403).send('Access denied. Only the creating manager can modify this project.');
+        if (project.managerId.toString() !== req.user.userId && !project.managers.includes(req.user.userId)) {
+            return res.status(403).send('Access denied. Only the creating manager or added managers can modify this project.');
         }
 
         if (name) {
             project.name = name;
-        }
-
+          }
+      
         if (description) {
             project.description = description;
         }
@@ -135,14 +179,11 @@ projectController.deleteProject = async (req, res) => {
     }
 };
 
-projectController.addDeveloper = async (req, res) => {
+projectController.addMember = async (req, res) => {
     try {
-        const { projectId, developerIds } = req.body;
+        const { projectId, memberIds } = req.body;
 
-        // Ensure developerIds is always an array
-        const developerIdsArray = Array.isArray(developerIds) ? developerIds : [developerIds];
-
-        console.log("Array of devs being added: ", developerIdsArray.join(', '));
+        const memberIdsArray = Array.isArray(memberIds) ? memberIds : [memberIds];
 
         const project = await Project.findById(projectId);
 
@@ -150,25 +191,36 @@ projectController.addDeveloper = async (req, res) => {
             return res.status(404).send('Project not found');
         }
 
-        if (project.managerId.toString() !== req.user.userId) {
-            return res.status(403).send('Access denied. Only the creating manager can modify this project.');
+        if (project.managerId.toString() !== req.user.userId && !project.managers.includes(req.user.userId)) {
+            return res.status(403).send('Access denied. Only the creating manager or added managers can modify this project.');
         }
 
-        let addedDevelopers = [];
+        let addedMembers = [];
 
-        for (const id of developerIdsArray) {
-            if (!project.developers.includes(id)) {
-                project.developers.push(id);
-                addedDevelopers.push(id);
+        for (const id of memberIdsArray) {
+            if (!project.developers.includes(id) && !project.managers.includes(id)) {
+                // Check if the member is a manager or developer
+                const user = await User.findById(id);
+                if (!user) {
+                    return res.status(404).send(`User with ID ${id} not found`);
+                }
+
+                if (user.role === 'Manager') {
+                    project.managers.push(id);
+                } else if (user.role === 'Developer') {
+                    project.developers.push(id);
+                }
+
+                addedMembers.push(id);
             }
         }
 
-        if (addedDevelopers.length > 0) {
+        if (addedMembers.length > 0) {
             await project.save();
-            console.log(`Developers [${addedDevelopers.join(', ')}] added to project ${projectId}`);
-            res.status(200).send(`Developers added successfully: ${addedDevelopers.join(', ')}`);
+            console.log(`Members [${addedMembers.join(', ')}] added to project ${projectId}`);
+            res.status(200).send(`Members added successfully: ${addedMembers.join(', ')}`);
         } else {
-            res.status(400).send('No new developers were added. They might already be assigned to this project.');
+            res.status(400).send('No new members were added. They might already be assigned to this project.');
         }
     } catch (error) {
         console.error(error);
@@ -177,31 +229,74 @@ projectController.addDeveloper = async (req, res) => {
 };
 
 
-projectController.removeDeveloper = async (req, res) => {
+projectController.removeMember = async (req, res) => {
     try {
-        const { projectId, developerId } = req.body;
+        const { projectId, memberIds } = req.body; // memberIds is expected to be an array
         const project = await Project.findById(projectId);
 
         if (!project) {
             return res.status(404).send('Project not found');
         }
 
-        if (project.managerId.toString() !== req.user.userId) {
-            return res.status(403).send('Access denied. Only the creating manager can modify this project.');
-        }
+        // Iterate over the array of member IDs
+        memberIds.forEach(memberId => {
+            // Remove the member if they are a developer or a manager in the project
+            project.developers = project.developers.filter(dev => dev.toString() !== memberId);
+            project.managers = project.managers.filter(mgr => mgr.toString() !== memberId);
+        });
 
-        if (!project.developers.includes(developerId)) {
-            return res.status(400).send('Developer not found in this project');
-        }
-
-        project.developers = project.developers.filter(dev => dev.toString() !== developerId);
         await project.save();
 
-        res.status(200).send('Developer removed successfully');
+        res.status(200).send('Members removed successfully');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
     }
 };
+
+
+
+
+
+projectController.findDeveloper = async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const { partialName } = req.body;
+
+        const project = await Project.findById(projectId).populate('developers', 'name');
+
+        if (!project) {
+            return res.status(404).send('Project not found');
+        }
+
+        const matchingDevelopers = project.developers.filter(developer => developer.name.includes(partialName));
+
+        console.log("Matching Developers: ", matchingDevelopers)
+        res.status(200).json(matchingDevelopers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, findDevelopers');
+    }
+};
+
+projectController.getAllDeveloper = async (req, res) => {
+    try {
+        const devs = [];
+        const users = await User.find();
+        console.log(users);
+        for (const user of users)
+        {
+            if (user.role == "Developer")
+                {
+                    devs.push(user);
+                }
+        };
+        res.status(200).send(devs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, findDevelopers');
+    }
+};
+
 
 module.exports = projectController;

@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "environmentName": "(Global Env)",
-    "dateExported": "2023-11-28T07:43:36.058Z",
+    "dateExported": "2023-12-24T14:16:36.786Z",
     "version": "1.0",
     "global": true,
     "variables": [
@@ -24,6 +24,10 @@
         {
             "name": "base_bug_url",
             "value": "localhost:3000/bugs"
+        },
+        {
+            "name": "base_user_url",
+            "value": "localhost:3000/user"
         }
     ]
 }

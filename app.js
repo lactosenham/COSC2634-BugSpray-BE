@@ -12,6 +12,7 @@ const projectRoutes = require('./routes/projectRoutes');
 const bugRoutes = require('./routes/bugRoutes');
 const userRoutes = require('./routes/userRoutes');
 const bugController = require('./controllers/bugController');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
