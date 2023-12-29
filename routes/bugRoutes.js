@@ -14,7 +14,7 @@ router.get('/solved', isAuthenticated, bugController.recentlySolvedBugs);
 
 router.get('/total-bugs-last-6-months', isAuthenticated, bugController.totalBugsReportedLast6Months);
 
-router.get('/severity-chart', isAuthenticated, bugController.bugsBySeverityChart);
+router.get('/bugs-chart/:type', isAuthenticated, bugController.bugsChart);
 
 router.get('/:id', bugController.getBugById);
 
