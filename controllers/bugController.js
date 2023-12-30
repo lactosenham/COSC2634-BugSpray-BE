@@ -442,14 +442,13 @@ bugController.bugsChart = async (req, res) => {
             // Optionally, add other filters here
         });
 
-        const counts = [0, 0, 0, 0, 0]; // Array for levels 1 to 5
-
-        bugs.forEach(bug => {
-            const value = bug[chartType]; // Get the value based on the type
+        const counts = bugs.reduce((acc, bug) => {
+            const value = bug[chartType];
             if (value >= 1 && value <= 5) {
-                counts[value - 1]++;
+                acc[value - 1]++;
             }
-        });
+            return acc;
+        }, [0, 0, 0, 0, 0]);
 
         res.status(200).send(counts);
     } catch (error) {
@@ -457,7 +456,6 @@ bugController.bugsChart = async (req, res) => {
         res.status(500).send(`Server error, bugsBy${chartType.charAt(0).toUpperCase() + chartType.slice(1)}`);
     }
 };
-
 
 
 bugController.processGitHubPayload = (payload) => {
