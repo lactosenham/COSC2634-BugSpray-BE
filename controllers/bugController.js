@@ -422,9 +422,10 @@ bugController.totalBugsReportedLast6Months = async (req, res) => {
 };
 
 
-bugController.bugsBySeverityChart = async (req, res) => {
+bugController.bugsChart = async (req, res) => {
     try {
         const userId = req.user.userId;
+        const chartType = req.params.type; // 'priority' or 'severity'
 
         const projects = await Project.find({
             $or: [
@@ -438,22 +439,21 @@ bugController.bugsBySeverityChart = async (req, res) => {
 
         const bugs = await Bug.find({
             projectId: { $in: projectIds },
-            status: 'In Progress',
+            // Optionally, add other filters here
         });
 
-        //3 level i think
-        const severityCounts = [0, 0, 0];
+        const counts = bugs.reduce((acc, bug) => {
+            const value = bug[chartType];
+            if (value >= 1 && value <= 5) {
+                acc[value - 1]++;
+            }
+            return acc;
+        }, [0, 0, 0, 0, 0]);
 
-
-        bugs.forEach(bug => {
-            const severity = bug.severity - 1; 
-            severityCounts[severity]++;
-        });
-
-        res.status(200).send(severityCounts);
+        res.status(200).send(counts);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Server error, bugsBySeverity');
+        res.status(500).send(`Server error, bugsBy${chartType.charAt(0).toUpperCase() + chartType.slice(1)}`);
     }
 };
 

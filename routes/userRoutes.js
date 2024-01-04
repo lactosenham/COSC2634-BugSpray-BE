@@ -10,6 +10,6 @@ router.get('/profile', isAuthenticated, userController.viewProfile);
 router.get('/getAllDeveloper', isAuthenticated, userController.getAllDeveloper);
 
 // Update user information
-router.patch('/update/:id', isAuthenticated, userController.updateUser);
+router.patch('/update/', isAuthenticated, userController.updateUser);
 
 module.exports = router;

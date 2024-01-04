@@ -47,12 +47,7 @@ userController.getAllDeveloper = async (req, res) => {
 userController.updateUser = async (req, res) => {
     try {
         const { username, password, name, role, developerType } = req.body;
-        const userId = req.params.id;
-
-        // Check if the user making the request is the same as the user being updated
-        if (req.user.userId !== userId) {
-            return res.status(403).send('Access denied. You can only update your own profile.');
-        }
+        const userId = req.user.userId;
 
         const updateData = {};
 
