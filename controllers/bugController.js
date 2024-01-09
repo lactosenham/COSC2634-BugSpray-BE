@@ -68,16 +68,21 @@ bugController.getBugsForUser = async (req, res) => {
 
 bugController.getBugById = async (req, res) => {
     try {
-        const bug = await Bug.findById(req.params.id);
+        const bug = await Bug.findById(req.params.id)
+            .populate('reportedBy', 'name')  // Populate the 'reportedBy' field with the 'name' property
+            .populate('assignedTo', 'name'); // Populate the 'assignedTo' field with the 'name' property
+
         if (!bug) {
             return res.status(404).send('Bug not found');
         }
+
         res.status(200).send(bug);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error, bug');
     }
 };
+
 
 bugController.getBugsForProject = async (req, res) => {
     try {
