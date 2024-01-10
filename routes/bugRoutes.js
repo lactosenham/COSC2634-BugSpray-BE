@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/report', isAuthenticated, bugController.reportBug);
 
-router.get('/all', bugController.getAllBugs);
+router.get('/all', isAuthenticated, bugController.getAllBugs);
 
 router.get('/mybugs', isAuthenticated, bugController.getBugsForUser);
 
