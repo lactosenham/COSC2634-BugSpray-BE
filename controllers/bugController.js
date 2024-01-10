@@ -42,17 +42,31 @@ bugController.reportBug = async (req, res) => {
     }
 };
 
-// module.exports = bugController;
-
 bugController.getAllBugs = async (req, res) => {
     try {
-        const bugs = await Bug.find();
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+
+        const bugs = await Bug.find({
+            projectId: { $in: projectIds },
+        });
+
         res.status(200).send(bugs);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error, bug');
     }
 };
+
 
 bugController.getBugsForUser = async (req, res) => {
     try {
