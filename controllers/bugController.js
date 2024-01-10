@@ -133,10 +133,10 @@ bugController.updateBug = async (req, res) => {
             const existingBug = await Bug.findById(req.params.id);
             req.body.resolvedTime = new Date();
 
-            // Check if there is at least one comment
-            if (!existingBug.comments || existingBug.comments.length === 0 || !existingBug.comments[0].comment) {
-                return res.status(400).send('At least one comment is required to move to "Resolved" status.');
-            }
+            // // Check if there is at least one comment
+            // if (!existingBug.comments || existingBug.comments.length === 0 || !existingBug.comments[0].comment) {
+            //     return res.status(400).send('At least one comment is required to move to "Resolved" status.');
+            // }
 
         } else if (status !== 'Resolved') {
             req.body.resolvedTime = null;
