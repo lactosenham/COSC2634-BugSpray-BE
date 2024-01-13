@@ -80,6 +80,57 @@ bugController.getBugsForUser = async (req, res) => {
     }
 };
 
+bugController.getTotalBugsCount = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+
+        const totalBugsCount = await Bug.countDocuments({
+            projectId: { $in: projectIds },
+        });
+
+        res.status(200).send({ totalBugsCount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, bug');
+    }
+};
+
+bugController.getOpenBugsCount = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const projects = await Project.find({
+            $or: [
+                { managerId: userId },
+                { managers: userId },
+                { developers: userId },
+            ],
+        });
+
+        const projectIds = projects.map(project => project._id);
+
+        const openBugsCount = await Bug.countDocuments({
+            projectId: { $in: projectIds },
+            status: 'Open',
+        });
+
+        res.status(200).send({ openBugsCount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error, bug');
+    }
+};
+
+
 bugController.getBugById = async (req, res) => {
     try {
         const bug = await Bug.findById(req.params.id)

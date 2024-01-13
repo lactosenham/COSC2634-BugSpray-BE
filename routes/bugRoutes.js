@@ -10,6 +10,10 @@ router.get('/all', isAuthenticated, bugController.getAllBugs);
 
 router.get('/mybugs', isAuthenticated, bugController.getBugsForUser);
 
+router.get('/totalbugs', isAuthenticated, bugController.getTotalBugsCount);
+
+router.get('/openbugs', isAuthenticated, bugController.getOpenBugsCount);
+
 router.get('/solved', isAuthenticated, bugController.recentlySolvedBugs);
 
 router.get('/total-bugs-last-6-months', isAuthenticated, bugController.totalBugsReportedLast6Months);
